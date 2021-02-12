@@ -20,4 +20,5 @@ words = ' '.join(sys.argv[1:])
 word_count = word_counter(words)
 
 # Print it out
+print type(word_count)
 print words, '->', word_count.count

@@ -5,7 +5,7 @@ import rospy
 from std_msgs.msg import Int32
 
 # Make this into a ROS node.
-rospy.init_node('topic_publisher')
+rospy.init_node(anonymous = True)
 
 # Prepare to publish topic `counter`
 pub = rospy.Publisher('counter', Int32, queue_size=10)
