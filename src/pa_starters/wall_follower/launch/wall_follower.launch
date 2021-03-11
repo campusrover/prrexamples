@@ -1,0 +1,5 @@
+<launch>
+    <node name="scan_values_handler" pkg="wall_follower" type="scan_values_handler.py" output="log"/>
+    <node name="driver" pkg="wall_follower" type="driver.py" output="screen"/>
+    <node name="pid" pkg="wall_follower" type="pid.py" output="screen"/>
+</launch>
