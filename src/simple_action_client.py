@@ -28,3 +28,4 @@ client.wait_for_result()
 
 # Print the result.
 rospy.loginfo('Time elapsed: %f'%(client.get_result().time_elapsed.to_sec()))
+rospy.loginfo('Updates sent: %d'%(client.get_result().updates_sent))

@@ -10,7 +10,7 @@ def do_timer(goal):
     time.sleep(goal.time_to_wait.to_sec())
     result = TimerResult()
     result.time_elapsed = rospy.Duration.from_sec(time.time() - start_time)
-    result.updates_sent = 0
+    result.updates_sent = 99
     server.set_succeeded(result)
 
 # Declare that we are a node
