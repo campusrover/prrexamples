@@ -1,9 +1,15 @@
 # Example of finite state machines
 # First we show how to do the example using the pytransitions package
-# Make sure the package is installed: pip install transitions
+# Make sure the package is installed: pip install transitions; pip install transitions[diagrams]  
 #
-# In ipython: `from fsm_example import MoveBaseRecovery`
-from transitions import Machine
+# In ipython:
+#     from fsm_example import MoveBaseRecovery
+#     t = MoveBaseRecovery("base")
+#     t.state
+#     t.stuck() # etc
+#     t.get_graph().draw('fsm_example.png', prog='dot')
+
+from transitions.extensions import GraphMachine as Machine
 
 class MoveBaseRecovery(object):
   states = ['navigating', 'reset', 'rotate1', 'reset_aggressive', 'rotate2', 'abort']
