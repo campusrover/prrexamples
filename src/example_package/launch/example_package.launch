@@ -1,0 +1,5 @@
+<launch>
+    <node name="scan_values_handler" pkg="example_package" type="scan_values_handler.py" output="log"/>
+    <node name="driver" pkg="example_package" type="driver.py" output="screen"/>
+    <node name="pid" pkg="example_package" type="pid.py" output="screen"/>
+</launch>
