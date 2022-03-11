@@ -1,6 +1,6 @@
 #!/usr/bin/env python  
 import rospy
-
+import time
 # Because of transformations
 import tf_conversions
 
@@ -19,7 +19,7 @@ def handle_turtle_pose(msg, turtlename):
 # Fill in the Transform with the current time, the from and to frame_ids and
 # the 7 components of the transform, three for translation and 4 (!) for rotation.
 
-    t.header.stamp = rospy.Time.now()
+    t.header.stamp = time.time()
     t.header.frame_id = "world"
     t.child_frame_id = turtlename
     t.transform.translation.x = msg.x
