@@ -10,8 +10,8 @@ def cv_callback(msg):
    do_stuff(cv_image)
 
 def do_stuff(img):
-    # get hsv image from opencv
-    hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV) 
+   # get hsv image from opencv
+   hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV) 
 
    # range of colors, found by trial and error
    lower_color_blue_bound = np.array([110,125,125]) 
