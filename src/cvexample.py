@@ -9,21 +9,22 @@ from std_msgs.msg import String
 import numpy as np
 import cv2 as cv
 from dynamic_reconfigure.server import Server as DynamicReconfigureServer
-from cvexample.cfg import nodeExampleConfig as ConfigType
+from prrexamples.cfg import CvexampleConfig as ConfigType
 
 
 class CvExample():
 
     def cv_callback(self, msg):
-        rospy.loginfo("Callback")
-        self.rgb_image = CvBridge().compressed_imgmsg_to_cv2(msg)
-        self.hsv_image = cv.cvtColor(self.rgb_image, cv.COLOR_BGR2HSV)
-        self.create_mask()
+        if (self.param_ready):
+            rospy.loginfo("Image callback")
+            self.rgb_image = CvBridge().compressed_imgmsg_to_cv2(msg)
+            self.hsv_image = cv.cvtColor(self.rgb_image, cv.COLOR_BGR2HSV)
+            self.create_mask()
 
     def create_mask(self):
         # range of colors, found by trial and error
-        lower_color_bound = np.array([self.lb_h, self.lb_s, self.lb_v])
-        upper_color_bound = np.array([self.up_h, self.ub_s, self.ub_v])
+        lower_color_bound = np.array([self.config.lb_h, self.config.lb_s, self.config.lb_v])
+        upper_color_bound = np.array([self.config.ub_h, self.config.ub_s, self.config.ub_v])
 
         # find pixels in range bounded by BGR color bounds
         self.mask = cv.inRange(self.hsv_image, lower_color_bound, upper_color_bound)
@@ -32,7 +33,7 @@ class CvExample():
         self.masked_hsv_img = cv.bitwise_and(self.hsv_image, self.hsv_image, mask=self.mask)
         self.masked_rgb_image = cv.cvtColor(self.masked_hsv_img, cv.COLOR_HSV2BGR)
 
-        masked_msg = CvBridge().cv2_to_imgmsg(self.masked_rgb_image)
+        masked_msg = CvBridge().cv2_to_compressed_imgmsg(self.masked_rgb_image)
         self.masked_pub.publish(masked_msg)
 
         # # # Now a grey version of image
@@ -68,13 +69,21 @@ class CvExample():
         # contour_msg = CvBridge().cv2_to_imgmsg(contour_image)
         # contour_pub.publish(contour_msg)
 
+    def dynamic_cb(self, config, level):
+        rospy.loginfo("Dynamic Config callback {lb_h}:{lb_s}:{lb_v} {ub_h}:{ub_s}:{ub_v}".format(**config))
+        self.config = config
+        self.param_ready = True
+        return config
+
     def __init__(self):
+        self.param_ready = False
         self.cam_sub = rospy.Subscriber("/raspicam_node/image/compressed", CompressedImage, self.cv_callback)
-        self.masked_pub = rospy.Publisher("/camera/rgb/masked", Image, queue_size=1)
+        self.masked_pub = rospy.Publisher("/camera/masked/compressed", CompressedImage, queue_size=1)
         self.grayed_pub = rospy.Publisher("/camera/rgb/grayed", Image, queue_size=1)
         self.blurred_pub = rospy.Publisher("/camera/rgb/blurred", Image, queue_size=1)
         self.contour_pub = rospy.Publisher("/camera/rgb/contour", Image, queue_size=1)
         self.centroid_pub = rospy.Publisher("/camera/rgb/centroid", Image, queue_size=1)
+        self.dynamic = DynamicReconfigureServer(ConfigType, self.dynamic_cb)
         rospy.loginfo("Initialized")
 
 # Main function.
