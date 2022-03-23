@@ -8,37 +8,83 @@ from matplotlib import pyplot as plt
 from std_msgs.msg import String
 import numpy as np
 import cv2 as cv
+from dynamic_reconfigure.server import Server as DynamicReconfigureServer
+from cvexample.cfg import nodeExampleConfig as ConfigType
 
-rospy.init_node('cvexample')
-BRIDGE = CvBridge()
 
-def cv_callback(msg):
-   cv_image = BRIDGE.imgmsg_to_cv2(msg)
-   do_stuff(cv_image)
+class CvExample():
 
-def do_stuff(img):
-   # get hsv image from opencv
-   hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV) 
+    def cv_callback(self, msg):
+        rospy.loginfo("Callback")
+        self.rgb_image = CvBridge().compressed_imgmsg_to_cv2(msg)
+        self.hsv_image = cv.cvtColor(self.rgb_image, cv.COLOR_BGR2HSV)
+        self.create_mask()
 
-   # range of colors, found by trial and error
-   lower_color_bound = np.array([50,1,1]) 
-   upper_color_bound = np.array([90,255,255]) 
-  
-   # find pixels in range bounded by BGR color bounds
-   mask = cv.inRange(hsv, lower_color_bound, upper_color_bound)
+    def create_mask(self):
+        # range of colors, found by trial and error
+        lower_color_bound = np.array([self.lb_h, self.lb_s, self.lb_v])
+        upper_color_bound = np.array([self.up_h, self.ub_s, self.ub_v])
 
-   # find pixels that are in both mask AND original img
-   masked_img = cv.bitwise_and(img, img, mask=mask)
-   ros_img = BRIDGE.cv2_to_imgmsg(masked_img)
-   rgb_pub.publish(ros_img)
-   # hsv_img = BRIDGE.cv2_to_imgmsg(hsv)
-   # hsv_pub.publish(hsv_img)    
+        # find pixels in range bounded by BGR color bounds
+        self.mask = cv.inRange(self.hsv_image, lower_color_bound, upper_color_bound)
 
-# subscriber/publishers
-cam_sub = rospy.Subscriber('/camera/rgb/image_raw', Image, cv_callback)
-rgb_pub = rospy.Publisher('/camera/rgb/masked', Image, queue_size=1)
-# hsv_pub = rospy.Publisher('/camera/rgb/hsv_image', Image, queue_size=1)
+        # find pixels that are in both mask AND original img
+        self.masked_hsv_img = cv.bitwise_and(self.hsv_image, self.hsv_image, mask=self.mask)
+        self.masked_rgb_image = cv.cvtColor(self.masked_hsv_img, cv.COLOR_HSV2BGR)
 
-# control loop
-while not rospy.is_shutdown():
-    rospy.sleep(10)
+        masked_msg = CvBridge().cv2_to_imgmsg(self.masked_rgb_image)
+        self.masked_pub.publish(masked_msg)
+
+        # # # Now a grey version of image
+        # grayed_image = cv.cvtColor(masked_img, cv.COLOR_RGB2GRAY)  # convert image to grayscale
+        # grayed_msg = CvBridge().cv2_to_imgmsg(grayed_image)
+        # grayed_pub.publish(grayed_msg)
+
+        # # Now lets compute the centroid
+        # h, w = grayed_image.shape
+        # search_top = int(3*h/4)
+        # search_bot = int(search_top + 20)
+        # grayed_image[0:search_top, 0:w] = 0
+        # grayed_image[search_bot:h, 0:w] = 0
+        # M = cv.moments(grayed_image)
+        # if M['m00'] > 0:
+        #     cx = int(M['m10']/M['m00'])
+        #     cy = int(M['m01']/M['m00'])
+        #     cv.circle(rgb_image, (cx, cy), 50, (0,0,255), -1)
+        # centroid_msg = CvBridge().cv2_to_imgmsg(rgb_image)
+        # centroid_pub.publish(centroid_msg)
+
+        # # Now blurr
+        # blurred_image = cv.GaussianBlur(grayed_image, (15, 15), 0)  # blur image with a 5x5 kernel
+        # blurred_msg = CvBridge().cv2_to_imgmsg(blurred_image)
+        # blurred_pub.publish(blurred_msg)
+
+        # # Lets try countours
+        # ret, thresh = cv.threshold(
+        #     blurred_image, 127, 255, cv.THRESH_BINARY_INV
+        # )  # create an threshold
+        # contours, hierachy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+        # contour_image = cv.drawContours(thresh, contours, -1, (255, 255, 255), 20)
+        # contour_msg = CvBridge().cv2_to_imgmsg(contour_image)
+        # contour_pub.publish(contour_msg)
+
+    def __init__(self):
+        self.cam_sub = rospy.Subscriber("/raspicam_node/image/compressed", CompressedImage, self.cv_callback)
+        self.masked_pub = rospy.Publisher("/camera/rgb/masked", Image, queue_size=1)
+        self.grayed_pub = rospy.Publisher("/camera/rgb/grayed", Image, queue_size=1)
+        self.blurred_pub = rospy.Publisher("/camera/rgb/blurred", Image, queue_size=1)
+        self.contour_pub = rospy.Publisher("/camera/rgb/contour", Image, queue_size=1)
+        self.centroid_pub = rospy.Publisher("/camera/rgb/centroid", Image, queue_size=1)
+        rospy.loginfo("Initialized")
+
+# Main function.
+if __name__ == "__main__":
+    # Initialize the node and name it.
+    rospy.init_node("cvexample")
+    # Go to class functions that do all the heavy lifting.
+    try:
+        CvExample()
+    except rospy.ROSInterruptException:
+        pass
+    rospy.spin()
+

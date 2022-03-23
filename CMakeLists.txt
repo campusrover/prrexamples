@@ -8,6 +8,7 @@ project(prrexamples)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  dynamic_reconfigure
   message_generation
   actionlib_msgs
 )
@@ -85,10 +86,10 @@ generate_messages(
 ##     and list every .cfg file to be processed
 
 ## Generate dynamic reconfigure parameters in the 'cfg' folder
-# generate_dynamic_reconfigure_options(
-#   cfg/DynReconf1.cfg
+generate_dynamic_reconfigure_options(
+    cfg/cvexample.cfg
 #   cfg/DynReconf2.cfg
-# )
+)
 
 ###################################
 ## catkin specific configuration ##
@@ -198,3 +199,8 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+# make sure configure headers are built before any node using them
+add_executable(cvexample src/cvexample.py)
+add_dependencies(cvexample prrexamples_gencfg)
+set_target_properties(cvexample PROPERTIES LINKER_LANGUAGE CMAKE_py_LINK_EXECUTABLE)
