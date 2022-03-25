@@ -11,6 +11,11 @@ import cv2 as cv
 from dynamic_reconfigure.server import Server as DynamicReconfigureServer
 from prrexamples.cfg import CvexampleConfig as ConfigType
 
+# This is a code example for Cosi119a - Autonomous Robotics
+# It illustrates
+# 1. how to subscribe and publish images - from the camera and to another topic
+# 2. how to use opencv to do a variety of useful transformations
+# 3. how to use dynamic_reconfigure to change parameters and see the effect
 
 class CvExample():
 
@@ -19,9 +24,13 @@ class CvExample():
             rospy.loginfo("Image callback")
             self.rgb_image = CvBridge().compressed_imgmsg_to_cv2(msg)
             self.hsv_image = cv.cvtColor(self.rgb_image, cv.COLOR_BGR2HSV)
-            self.create_mask()
+            self.create_masked_image()
+            self.create_grey_image()
+            self.create_centroid_image()
+            self.create_blurred_image()
+            self.create_contours()
 
-    def create_mask(self):
+    def create_masked_image(self):
         # range of colors, found by trial and error
         lower_color_bound = np.array([self.config.lb_h, self.config.lb_s, self.config.lb_v])
         upper_color_bound = np.array([self.config.ub_h, self.config.ub_s, self.config.ub_v])
@@ -35,39 +44,37 @@ class CvExample():
 
         masked_msg = CvBridge().cv2_to_compressed_imgmsg(self.masked_rgb_image)
         self.masked_pub.publish(masked_msg)
+    
+    def create_grey_image(self):
+        self.grey_image = cv.cvtColor(self.rgb_image, cv.COLOR_RGB2GRAY) 
+        self.grey_masked_image = cv.cvtColor(self.masked_rgb_image, cv.COLOR_RGB2GRAY) 
+        grey_masked_msg = CvBridge().cv2_to_compressed_imgmsg(self.grey_masked_image)
+        self.grayed_pub.publish(grey_masked_msg)
 
-        # # # Now a grey version of image
-        # grayed_image = cv.cvtColor(masked_img, cv.COLOR_RGB2GRAY)  # convert image to grayscale
-        # grayed_msg = CvBridge().cv2_to_imgmsg(grayed_image)
-        # grayed_pub.publish(grayed_msg)
+    def create_centroid_image(self):
+        self.centroid_image = self.rgb_image.copy()
+        M = cv.moments(self.grey_masked_image)
+        if M['m00'] > 0:
+             cx = int(M['m10']/M['m00'])
+             cy = int(M['m01']/M['m00'])
+             cv.circle(self.centroid_image, (cx, cy), 20, (0,255,255), -1)
+        centroid_msg = CvBridge().cv2_to_compressed_imgmsg(self.centroid_image)
+        self.centroid_pub.publish(centroid_msg)
 
-        # # Now lets compute the centroid
-        # h, w = grayed_image.shape
-        # search_top = int(3*h/4)
-        # search_bot = int(search_top + 20)
-        # grayed_image[0:search_top, 0:w] = 0
-        # grayed_image[search_bot:h, 0:w] = 0
-        # M = cv.moments(grayed_image)
-        # if M['m00'] > 0:
-        #     cx = int(M['m10']/M['m00'])
-        #     cy = int(M['m01']/M['m00'])
-        #     cv.circle(rgb_image, (cx, cy), 50, (0,0,255), -1)
-        # centroid_msg = CvBridge().cv2_to_imgmsg(rgb_image)
-        # centroid_pub.publish(centroid_msg)
+    def create_blurred_image(self):
+        # Now blurr
+        self.blurred_image = cv.GaussianBlur(self.grey_masked_image, (self.config.blurr*2+1, self.config.blurr*2+1), 0)  # blur image with a 5x5 kernel
+        blurred_msg = CvBridge().cv2_to_compressed_imgmsg(self.blurred_image)
+        self.blurred_pub.publish(blurred_msg)
 
-        # # Now blurr
-        # blurred_image = cv.GaussianBlur(grayed_image, (15, 15), 0)  # blur image with a 5x5 kernel
-        # blurred_msg = CvBridge().cv2_to_imgmsg(blurred_image)
-        # blurred_pub.publish(blurred_msg)
-
+    def create_contours(self):
         # # Lets try countours
-        # ret, thresh = cv.threshold(
-        #     blurred_image, 127, 255, cv.THRESH_BINARY_INV
-        # )  # create an threshold
-        # contours, hierachy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
-        # contour_image = cv.drawContours(thresh, contours, -1, (255, 255, 255), 20)
-        # contour_msg = CvBridge().cv2_to_imgmsg(contour_image)
-        # contour_pub.publish(contour_msg)
+        ret, thresh = cv.threshold(
+            self.blurred_image, 0, 255, cv.THRESH_BINARY_INV)  # create an threshold
+        contours, hierachy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+        self.contour_image = cv.drawContours(thresh, contours, -1, (255, 255, 255), 20)
+        contour_msg = CvBridge().cv2_to_compressed_imgmsg(self.contour_image)
+        self.contour_pub.publish(contour_msg)
 
     def dynamic_cb(self, config, level):
         rospy.loginfo("Dynamic Config callback {lb_h}:{lb_s}:{lb_v} {ub_h}:{ub_s}:{ub_v}".format(**config))
@@ -78,11 +85,11 @@ class CvExample():
     def __init__(self):
         self.param_ready = False
         self.cam_sub = rospy.Subscriber("/raspicam_node/image/compressed", CompressedImage, self.cv_callback)
-        self.masked_pub = rospy.Publisher("/camera/masked/compressed", CompressedImage, queue_size=1)
-        self.grayed_pub = rospy.Publisher("/camera/rgb/grayed", Image, queue_size=1)
-        self.blurred_pub = rospy.Publisher("/camera/rgb/blurred", Image, queue_size=1)
-        self.contour_pub = rospy.Publisher("/camera/rgb/contour", Image, queue_size=1)
-        self.centroid_pub = rospy.Publisher("/camera/rgb/centroid", Image, queue_size=1)
+        self.masked_pub = rospy.Publisher("/cvexample/masked/compressed", CompressedImage, queue_size=1)
+        self.grayed_pub = rospy.Publisher("/cvexample/grayed/compressed", CompressedImage, queue_size=1)
+        self.blurred_pub = rospy.Publisher("/cvexample/blurred/compressed", CompressedImage, queue_size=1)
+        self.contour_pub = rospy.Publisher("/cvexample/contour/compressed", CompressedImage, queue_size=1)
+        self.centroid_pub = rospy.Publisher("/cvexample/centroid/compressed", CompressedImage, queue_size=1)
         self.dynamic = DynamicReconfigureServer(ConfigType, self.dynamic_cb)
         rospy.loginfo("Initialized")
 
