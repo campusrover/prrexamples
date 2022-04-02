@@ -112,8 +112,8 @@ class FiducialUtils:
         imageTime = msg.header.stamp
         self.linSpeed = 0
 
-        rospy.debug("Imagetime: %s Ros Time: %s", imageTime, rospy.Time.now())
-        rospy.debug("*****")
+        rospy.logdebug("Imagetime: %s Ros Time: %s", imageTime, rospy.Time.now())
+        rospy.logdebug("*****")
         found = False
 
         # For every fiducial found by the dectector, publish a transform
