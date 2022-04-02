@@ -45,13 +45,11 @@ import time
 def degrees(r):
     return 180.0 * r / math.pi
 
-class Follow:
+class FiducialUtils:
     """
     Constructor for our class
     """
     def __init__(self):
-       rospy.init_node('follow')
-
        # Set up a transform listener so we can lookup transforms in the past
        self.tfBuffer = tf2_ros.Buffer(rospy.Time(30))
        self.lr = tf2_ros.TransformListener(self.tfBuffer)
@@ -168,9 +166,9 @@ class Follow:
 #     """
 #     Main loop
 #     """
-    def run(self):
-         # setup for looping at 20hz
-         rate = rospy.Rate(20)
+# def run(self):
+#      # setup for looping at 20hz
+#      rate = rospy.Rate(20)
 
 #         # Setup the variables that we will use later
 #         linSpeed = 0.0
@@ -178,7 +176,7 @@ class Follow:
 #         times_since_last_fid = 0
 
 #         # While our node is running
-#         while not rospy.is_shutdown():
+#          while not rospy.is_shutdown():
 #             # Calculate the error in the x and y directions
 #             forward_error = self.fid_x - self.min_dist
 #             lateral_error = self.fid_y
@@ -266,3 +264,13 @@ if __name__ == "__main__":
     node = Follow()
     # run it
     node.run()
+
+# Main function.
+if __name__ == "__main__":
+    # Initialize the node and name it.
+    rospy.init_node('fiducial_utils')
+    try:
+        FiducialUtils()
+    except rospy.ROSInterruptException:
+        pass
+    rospy.spin()
