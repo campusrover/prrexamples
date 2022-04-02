@@ -154,7 +154,7 @@ class Follow:
             ct = tf.transform.translation
             cr = tf.transform.rotation
             rospy.loginfo("T_fidBase %lf %lf %lf %lf %lf %lf %lf\n" % \
-                             (ct.x, ct.y, ct.z, cr.x, cr.y, cr.z, cr.w)
+                             (ct.x, ct.y, ct.z, cr.x, cr.y, cr.z, cr.w))
 
             # Set the state varibles to the position of the fiducial
             self.fid_x = ct.x
