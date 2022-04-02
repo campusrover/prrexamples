@@ -1,5 +1,5 @@
 <launch>
-  <node pkg="prrexamples" type="aruco_utils" name="aruco_utils.py">
+  <node pkg="prrexamples" name="aruco_utils" type="aruco_utils.py">
     <param name="suppressCmd" type="bool" value="true"/>  
   </node>
 </launch>
