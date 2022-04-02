@@ -114,7 +114,6 @@ class FiducialUtils:
         self.linSpeed = 0
 
         rospy.logdebug("Imagetime: %s Ros Time: %s", imageTime, rospy.Time.now())
-        rospy.logdebug("*****")
         found = False
 
         # For every fiducial found by the dectector, publish a transform
@@ -126,18 +125,18 @@ class FiducialUtils:
                 "Fid %d %lf %lf %lf %lf %lf %lf %lf\n"
                 % (id, trans.x, trans.y, trans.z, rot.x, rot.y, rot.z, rot.w)
             )
-            t = TransformStamped()
-            t.child_frame_id = "fid%d" % id
-            t.header.frame_id = msg.header.frame_id
-            t.header.stamp = imageTime
-            t.transform.translation.x = trans.x
-            t.transform.translation.y = trans.y
-            t.transform.translation.z = trans.z
-            t.transform.rotation.x = rot.x
-            t.transform.rotation.y = rot.y
-            t.transform.rotation.z = rot.z
-            t.transform.rotation.w = rot.w
-            self.br.sendTransform(t)
+            # t = TransformStamped()
+            # t.child_frame_id = "fid%d" % id
+            # t.header.frame_id = msg.header.frame_id
+            # t.header.stamp = imageTime
+            # t.transform.translation.x = trans.x
+            # t.transform.translation.y = trans.y
+            # t.transform.translation.z = trans.z
+            # t.transform.rotation.x = rot.x
+            # t.transform.rotation.y = rot.y
+            # t.transform.rotation.z = rot.z
+            # t.transform.rotation.w = rot.w
+            # self.br.sendTransform(t)
 
             if t.child_frame_id == self.target_fiducial:
                 rospy.logdebug("Matched Fiducial: %s", self.target_fiducial)
