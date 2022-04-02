@@ -112,8 +112,8 @@ class FiducialUtils:
         imageTime = msg.header.stamp
         self.linSpeed = 0
 
-        rospy.loginfo("Imagetime: %s Ros Time: %s", imageTime, rospy.Time.now())
-        rospy.loginfo("*****")
+        rospy.debug("Imagetime: %s Ros Time: %s", imageTime, rospy.Time.now())
+        rospy.debug("*****")
         found = False
 
         # For every fiducial found by the dectector, publish a transform
@@ -263,6 +263,8 @@ class FiducialUtils:
 if __name__ == "__main__":
     # Initialize the node and name it.
     rospy.init_node('fiducial_utils')
+    # setup for looping at 20hz
+    rate = rospy.Rate(20)
     try:
         FiducialUtils()
     except rospy.ROSInterruptException:
