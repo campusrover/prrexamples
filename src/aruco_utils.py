@@ -127,15 +127,15 @@ class FiducialUtils:
             )
             t = TransformStamped()
             t.child_frame_id = "fid%d" % id
-            # t.header.frame_id = msg.header.frame_id
-            # t.header.stamp = imageTime
-            # t.transform.translation.x = trans.x
-            # t.transform.translation.y = trans.y
-            # t.transform.translation.z = trans.z
-            # t.transform.rotation.x = rot.x
-            # t.transform.rotation.y = rot.y
-            # t.transform.rotation.z = rot.z
-            # t.transform.rotation.w = rot.w
+            t.header.frame_id = msg.header.frame_id
+            t.header.stamp = imageTime
+            t.transform.translation.x = trans.x
+            t.transform.translation.y = trans.y
+            t.transform.translation.z = trans.z
+            t.transform.rotation.x = rot.x
+            t.transform.rotation.y = rot.y
+            t.transform.rotation.z = rot.z
+            t.transform.rotation.w = rot.w
             # self.br.sendTransform(t)
 
             if t.child_frame_id == self.target_fiducial:
