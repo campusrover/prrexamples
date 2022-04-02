@@ -111,58 +111,58 @@ class Follow:
 #     Called when a FiducialTransformArray is received
 #     """
 #     def newTf(self, msg):
-#         imageTime = msg.header.stamp
-#         self.linSpeed = 0
+        imageTime = msg.header.stamp
+        self.linSpeed = 0
 
-#         rospy.loginfo(imageTime, rospy.Time.now())
-#         rospy.loginfo("*****")
-#         found = False
+        rospy.loginfo(imageTime, rospy.Time.now())
+        rospy.loginfo("*****")
+        found = False
 
-#         # For every fiducial found by the dectector, publish a transform
-#         for m in msg.transforms:
-#             id = m.fiducial_id
-#             trans = m.transform.translation
-#             rot = m.transform.rotation
-#             rospy.loginfo("Fid %d %lf %lf %lf %lf %lf %lf %lf\n" % \
-#                                  (id, trans.x, trans.y, trans.z,
-#                                   rot.x, rot.y, rot.z, rot.w))
-#             t = TransformStamped()
-#             t.child_frame_id = "fid%d" % id
-#             t.header.frame_id = msg.header.frame_id
-#             t.header.stamp = imageTime
-#             t.transform.translation.x = trans.x
-#             t.transform.translation.y = trans.y
-#             t.transform.translation.z = trans.z
-#             t.transform.rotation.x = rot.x
-#             t.transform.rotation.y = rot.y
-#             t.transform.rotation.z = rot.z
-#             t.transform.rotation.w = rot.w
-#             self.br.sendTransform(t)
+        # For every fiducial found by the dectector, publish a transform
+        for m in msg.transforms:
+            id = m.fiducial_id
+            trans = m.transform.translation
+            rot = m.transform.rotation
+            rospy.loginfo("Fid %d %lf %lf %lf %lf %lf %lf %lf\n" % \
+                                 (id, trans.x, trans.y, trans.z,
+                                  rot.x, rot.y, rot.z, rot.w))
+            t = TransformStamped()
+            t.child_frame_id = "fid%d" % id
+            t.header.frame_id = msg.header.frame_id
+            t.header.stamp = imageTime
+            t.transform.translation.x = trans.x
+            t.transform.translation.y = trans.y
+            t.transform.translation.z = trans.z
+            t.transform.rotation.x = rot.x
+            t.transform.rotation.y = rot.y
+            t.transform.rotation.z = rot.z
+            t.transform.rotation.w = rot.w
+            self.br.sendTransform(t)
 
-#             if t.child_frame_id == self.target_fiducial:
-#                 # We found the fiducial we are looking for
-#                 found = True
+            if t.child_frame_id == self.target_fiducial:
+                # We found the fiducial we are looking for
+                found = True
 
-#                 # Add the transform of the fiducial to our buffer
-#                 self.tfBuffer.set_transform(t, "follow")
+                # Add the transform of the fiducial to our buffer
+                self.tfBuffer.set_transform(t, "follow")
 
-#         if not found:
-#             return # Exit this function now, we don't see the fiducial
-#         try:
-#             # Get the fiducial position relative to the robot center, instead of the camera
-#             tf = self.tfBuffer.lookup_transform("base_link", self.target_fiducial, imageTime)
-#             ct = tf.transform.translation
-#             cr = tf.transform.rotation
-#             rospy.loginfo("T_fidBase %lf %lf %lf %lf %lf %lf %lf\n" % \
-#                              (ct.x, ct.y, ct.z, cr.x, cr.y, cr.z, cr.w)
+        if not found:
+            return # Exit this function now, we don't see the fiducial
+        try:
+            # Get the fiducial position relative to the robot center, instead of the camera
+            tf = self.tfBuffer.lookup_transform("base_link", self.target_fiducial, imageTime)
+            ct = tf.transform.translation
+            cr = tf.transform.rotation
+            rospy.loginfo("T_fidBase %lf %lf %lf %lf %lf %lf %lf\n" % \
+                             (ct.x, ct.y, ct.z, cr.x, cr.y, cr.z, cr.w)
 
-#             # Set the state varibles to the position of the fiducial
-#             self.fid_x = ct.x
-#             self.fid_y = ct.y
-#             self.got_fid = True
-#         except:
-#             traceback.print_exc()
-#             rospy.loginfo("Could not get tf for %s" % self.target_fiducial)
+            # Set the state varibles to the position of the fiducial
+            self.fid_x = ct.x
+            self.fid_y = ct.y
+            self.got_fid = True
+        except:
+            traceback.print_exc()
+            rospy.loginfo("Could not get tf for %s" % self.target_fiducial)
 
 
 #     """
