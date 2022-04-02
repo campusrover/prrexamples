@@ -110,7 +110,7 @@ class Follow:
 #     """
 #     Called when a FiducialTransformArray is received
 #     """
-     def newTf(self, msg):
+    def newTf(self, msg):
         imageTime = msg.header.stamp
         self.linSpeed = 0
 
