@@ -173,99 +173,99 @@ class FiducialUtils:
             Main loop
             """
 
-            def run(self):
-                # setup for looping at 20hz
-                rate = rospy.Rate(20)
+    def run(self):
+        # setup for looping at 20hz
+        rate = rospy.Rate(20)
 
-                # Setup the variables that we will use later
-                linSpeed = 0.0
-                angSpeed = 0.0
-                times_since_last_fid = 0
-                # While our node is running
-                while not rospy.is_shutdown():
-                    rospy.loginfo("Fiducial odom: x: %f y: %f", self.fid_x, self.fid_y)
+        # Setup the variables that we will use later
+        linSpeed = 0.0
+        angSpeed = 0.0
+        times_since_last_fid = 0
+        # While our node is running
+        while not rospy.is_shutdown():
+            rospy.loginfo("Fiducial odom: x: %f y: %f", self.fid_x, self.fid_y)
 
-                #               (forward_error, lateral_error, degrees(angular_error))
-                #             # Calculate the error in the x and y directions
-                #             forward_error = self.fid_x - self.min_dist
-                #             lateral_error = self.fid_y
+        #               (forward_error, lateral_error, degrees(angular_error))
+        #             # Calculate the error in the x and y directions
+        #             forward_error = self.fid_x - self.min_dist
+        #             lateral_error = self.fid_y
 
-                #             # Calculate the amount of turning needed towards the fiducial
-                #             # atan2 works for any point on a circle (as opposed to atan)
-                #             angular_error = math.atan2(self.fid_y, self.fid_x)
+        #             # Calculate the amount of turning needed towards the fiducial
+        #             # atan2 works for any point on a circle (as opposed to atan)
+        #             angular_error = math.atan2(self.fid_y, self.fid_x)
 
-                #             rospy.loginfo("Errors: forward %f lateral %f angular %f" % \
-                #               (forward_error, lateral_error, degrees(angular_error))
+        #             rospy.loginfo("Errors: forward %f lateral %f angular %f" % \
+        #               (forward_error, lateral_error, degrees(angular_error))
 
-                #             if self.got_fid:
-                #                 times_since_last_fid = 0
-                #             else:
-                #                 times_since_last_fid += 1
+        #             if self.got_fid:
+        #                 times_since_last_fid = 0
+        #             else:
+        #                 times_since_last_fid += 1
 
-                #             if forward_error > self.max_dist:
-                #                 rospy.loginfo("Fiducial is too far away")
-                #                 linSpeed = 0
-                #                 angSpeed = 0
-                #             # A fiducial was detected since last iteration of this loop
-                #             elif self.got_fid:
-                #                 # Set the turning speed based on the angular error
-                #                 # Add some damping based on the previous speed to smooth the motion
-                #                 angSpeed = angular_error * self.angular_rate - angSpeed / 2.0
-                #                 # Make sure that the angular speed is within limits
-                #                 if angSpeed < -self.max_angular_rate:
-                #                     angSpeed = -self.max_angular_rate
-                #                 if angSpeed > self.max_angular_rate:
-                #                     angSpeed = self.max_angular_rate
+        #             if forward_error > self.max_dist:
+        #                 rospy.loginfo("Fiducial is too far away")
+        #                 linSpeed = 0
+        #                 angSpeed = 0
+        #             # A fiducial was detected since last iteration of this loop
+        #             elif self.got_fid:
+        #                 # Set the turning speed based on the angular error
+        #                 # Add some damping based on the previous speed to smooth the motion
+        #                 angSpeed = angular_error * self.angular_rate - angSpeed / 2.0
+        #                 # Make sure that the angular speed is within limits
+        #                 if angSpeed < -self.max_angular_rate:
+        #                     angSpeed = -self.max_angular_rate
+        #                 if angSpeed > self.max_angular_rate:
+        #                     angSpeed = self.max_angular_rate
 
-                #                 # Set the forward speed based distance
-                #                 linSpeed = forward_error * self.linear_rate
-                #                 # Make sure that the angular speed is within limits
-                #                 if linSpeed < -self.max_linear_rate:
-                #                     linSpeed = -self.max_linear_rate
-                #                 if linSpeed > self.max_linear_rate:
-                #                     linSpeed = self.max_linear_rate
+        #                 # Set the forward speed based distance
+        #                 linSpeed = forward_error * self.linear_rate
+        #                 # Make sure that the angular speed is within limits
+        #                 if linSpeed < -self.max_linear_rate:
+        #                     linSpeed = -self.max_linear_rate
+        #                 if linSpeed > self.max_linear_rate:
+        #                     linSpeed = self.max_linear_rate
 
-                #             # Hysteresis, don't immediately stop if the fiducial is lost
-                #             elif not self.got_fid and times_since_last_fid < self.hysteresis_count:
-                #                 # Decrease the speed (assuming linear decay is <1)
-                #                 linSpeed *= self.linear_decay
+        #             # Hysteresis, don't immediately stop if the fiducial is lost
+        #             elif not self.got_fid and times_since_last_fid < self.hysteresis_count:
+        #                 # Decrease the speed (assuming linear decay is <1)
+        #                 linSpeed *= self.linear_decay
 
-                #             # Try to refind fiducial by rotating
-                #             elif self.got_fid == False and times_since_last_fid < self.max_lost_count:
-                #                 # Stop moving forward
-                #                 linSpeed = 0
-                #                 # Keep turning in the same direction
-                #                 if angSpeed < 0:
-                #                     angSpeed = -self.lost_angular_rate
-                #                 elif angSpeed > 0:
-                #                     angSpeed = self.lost_angular_rate
-                #                 else:
-                #                     angSpeed = 0
-                #                 rospy.loginfo("Try keep rotating to refind fiducial: try# %d" % times_since_last_fid)
-                #             else:
-                #                 angSpeed = 0
-                #                 linSpeed = 0
+        #             # Try to refind fiducial by rotating
+        #             elif self.got_fid == False and times_since_last_fid < self.max_lost_count:
+        #                 # Stop moving forward
+        #                 linSpeed = 0
+        #                 # Keep turning in the same direction
+        #                 if angSpeed < 0:
+        #                     angSpeed = -self.lost_angular_rate
+        #                 elif angSpeed > 0:
+        #                     angSpeed = self.lost_angular_rate
+        #                 else:
+        #                     angSpeed = 0
+        #                 rospy.loginfo("Try keep rotating to refind fiducial: try# %d" % times_since_last_fid)
+        #             else:
+        #                 angSpeed = 0
+        #                 linSpeed = 0
 
-                #             rospy.loginfo("Speeds: linear %f angular %f" % (linSpeed, angSpeed))
+        #             rospy.loginfo("Speeds: linear %f angular %f" % (linSpeed, angSpeed))
 
-                #             # Create a Twist message from the velocities and publish it
-                #             # Avoid sending repeated zero speed commands, so teleop
-                #             # can work
-                #             zeroSpeed = (angSpeed == 0 and linSpeed == 0)
-                #             if not zeroSpeed:
-                #                 self.suppressCmd = False
-                #             rospy.loginfo("zero", zeroSpeed, self.suppressCmd)
-                #             if not self.suppressCmd:
-                #                 twist = Twist()
-                #                 twist.angular.z = angSpeed
-                #                 twist.linear.x = linSpeed
-                #                 self.cmdPub.publish(twist)
-                #                 if zeroSpeed:
-                #                     self.suppressCmd = True
+        #             # Create a Twist message from the velocities and publish it
+        #             # Avoid sending repeated zero speed commands, so teleop
+        #             # can work
+        #             zeroSpeed = (angSpeed == 0 and linSpeed == 0)
+        #             if not zeroSpeed:
+        #                 self.suppressCmd = False
+        #             rospy.loginfo("zero", zeroSpeed, self.suppressCmd)
+        #             if not self.suppressCmd:
+        #                 twist = Twist()
+        #                 twist.angular.z = angSpeed
+        #                 twist.linear.x = linSpeed
+        #                 self.cmdPub.publish(twist)
+        #                 if zeroSpeed:
+        #                     self.suppressCmd = True
 
-                # We already acted on the current fiducial
-                self.got_fid = False
-                rate.sleep()
+        # We already acted on the current fiducial
+        self.got_fid = False
+        rate.sleep()
 
 
 # Main function.
