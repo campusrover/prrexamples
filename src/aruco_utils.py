@@ -156,7 +156,7 @@ class FiducialUtils:
             )
             ct = tf.transform.translation
             cr = tf.transform.rotation
-            rospy.loginfo(
+            rospy.logdebug(
                 "T_fidBase %lf %lf %lf %lf %lf %lf %lf\n"
                 % (ct.x, ct.y, ct.z, cr.x, cr.y, cr.z, cr.w)
             )
