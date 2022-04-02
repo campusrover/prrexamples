@@ -121,7 +121,7 @@ class FiducialUtils:
             id = m.fiducial_id
             trans = m.transform.translation
             rot = m.transform.rotation
-            rospy.loginfo("Fid %d %lf %lf %lf %lf %lf %lf %lf\n" % \
+            rospy.logdebug("Fid %d %lf %lf %lf %lf %lf %lf %lf\n" % \
                                  (id, trans.x, trans.y, trans.z,
                                   rot.x, rot.y, rot.z, rot.w))
             t = TransformStamped()
