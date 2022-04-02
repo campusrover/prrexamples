@@ -112,7 +112,7 @@ class FiducialUtils:
         imageTime = msg.header.stamp
         self.linSpeed = 0
 
-        rospy.loginfo(imageTime, rospy.Time.now())
+        rospy.loginfo("Imagetime: %s Ros Time: %s", imageTime, rospy.Time.now())
         rospy.loginfo("*****")
         found = False
 
