@@ -45,66 +45,66 @@ import time
 def degrees(r):
     return 180.0 * r / math.pi
 
-# class Follow:
-#     """
-#     Constructor for our class
-#     """
-#     def __init__(self):
-#        rospy.init_node('follow')
+class Follow:
+    """
+    Constructor for our class
+    """
+    def __init__(self):
+       rospy.init_node('follow')
 
-#        # Set up a transform listener so we can lookup transforms in the past
-#        self.tfBuffer = tf2_ros.Buffer(rospy.Time(30))
-#        self.lr = tf2_ros.TransformListener(self.tfBuffer)
+       # Set up a transform listener so we can lookup transforms in the past
+       self.tfBuffer = tf2_ros.Buffer(rospy.Time(30))
+       self.lr = tf2_ros.TransformListener(self.tfBuffer)
 
-#        # Setup a transform broadcaster so that we can publish transforms
-#        # This allows to visualize the 3D position of the fiducial easily in rviz
-#        self.br = tf2_ros.TransformBroadcaster()
+       # Setup a transform broadcaster so that we can publish transforms
+       # This allows to visualize the 3D position of the fiducial easily in rviz
+       self.br = tf2_ros.TransformBroadcaster()
 
-#        # A publisher for robot motion commands
-#        self.cmdPub = rospy.Publisher("/cmd_vel", Twist, queue_size=1)
+       # A publisher for robot motion commands
+       self.cmdPub = rospy.Publisher("/cmd_vel", Twist, queue_size=1)
 
-#        # Flag to avoid sending repeated zero speeds
-#        self.suppressCmd = False
+       # Flag to avoid sending repeated zero speeds
+       self.suppressCmd = False
 
-#        # The name of the coordinate frame of the fiducial we are interested in
-#        self.target_fiducial = rospy.get_param("~target_fiducial", "fid49")
+       # The name of the coordinate frame of the fiducial we are interested in
+       self.target_fiducial = rospy.get_param("~target_fiducial", "fid49")
 
-#        # Minimum distance we want the robot to be from the fiducial
-#        self.min_dist = rospy.get_param("~min_dist", 0.6)
+       # Minimum distance we want the robot to be from the fiducial
+       self.min_dist = rospy.get_param("~min_dist", 0.6)
 
-#        # Maximum distance a fiducial can be away for us to attempt to follow
-#        self.max_dist = rospy.get_param("~max_dist", 2.5)
+       # Maximum distance a fiducial can be away for us to attempt to follow
+       self.max_dist = rospy.get_param("~max_dist", 2.5)
 
-#        # Proportion of angular error to use as angular velocity
-#        self.angular_rate = rospy.get_param("~angular_rate", 2.0)
+       # Proportion of angular error to use as angular velocity
+       self.angular_rate = rospy.get_param("~angular_rate", 2.0)
 
-#        # Maximum angular speed (radians/second)
-#        self.max_angular_rate = rospy.get_param("~max_angular_rate", 1.2)
+       # Maximum angular speed (radians/second)
+       self.max_angular_rate = rospy.get_param("~max_angular_rate", 1.2)
 
-#        # Angular velocity when a fiducial is not in view
-#        self.lost_angular_rate = rospy.get_param("~lost_angular_rate", 0.6)
+       # Angular velocity when a fiducial is not in view
+       self.lost_angular_rate = rospy.get_param("~lost_angular_rate", 0.6)
 
-#        # Proportion of linear error to use as linear velocity
-#        self.linear_rate = rospy.get_param("~linear_rate", 1.2)
+       # Proportion of linear error to use as linear velocity
+       self.linear_rate = rospy.get_param("~linear_rate", 1.2)
 
-#        # Maximum linear speed (meters/second)
-#        self.max_linear_rate = rospy.get_param("~max_linear_rate", 1.5)
+       # Maximum linear speed (meters/second)
+       self.max_linear_rate = rospy.get_param("~max_linear_rate", 1.5)
 
-#        # Linear speed decay (meters/second)
-#        self.linear_decay = rospy.get_param("~linear_decay", 0.9)
+       # Linear speed decay (meters/second)
+       self.linear_decay = rospy.get_param("~linear_decay", 0.9)
 
-#        # How many loop iterations to keep linear velocity after fiducial
-#        # disappears
-#        self.hysteresis_count = rospy.get_param("~hysteresis_count", 20)
+       # How many loop iterations to keep linear velocity after fiducial
+       # disappears
+       self.hysteresis_count = rospy.get_param("~hysteresis_count", 20)
 
-#        # How many loop iterations to keep rotating after fiducial disappears
-#        self.max_lost_count = rospy.get_param("~max_lost_count", 400)
+       # How many loop iterations to keep rotating after fiducial disappears
+       self.max_lost_count = rospy.get_param("~max_lost_count", 400)
 
-#        # Subscribe to incoming transforms
-#        rospy.Subscriber("/fiducial_transforms", FiducialTransformArray, self.newTf)
-#        self.fid_x = self.min_dist
-#        self.fid_y = 0
-#        self.got_fid = False
+       # Subscribe to incoming transforms
+       rospy.Subscriber("/fiducial_transforms", FiducialTransformArray, self.newTf)
+       self.fid_x = self.min_dist
+       self.fid_y = 0
+       self.got_fid = False
 
 
 #     """
@@ -168,9 +168,9 @@ def degrees(r):
 #     """
 #     Main loop
 #     """
-#     def run(self):
-#         # setup for looping at 20hz
-#         rate = rospy.Rate(20)
+    def run(self):
+         # setup for looping at 20hz
+         rate = rospy.Rate(20)
 
 #         # Setup the variables that we will use later
 #         linSpeed = 0.0
@@ -261,8 +261,8 @@ def degrees(r):
 #             rate.sleep()
 
 
-# if __name__ == "__main__":
-#     # Create an instance of our follow class
-#     node = Follow()
-#     # run it
-#     node.run()
+if __name__ == "__main__":
+    # Create an instance of our follow class
+    node = Follow()
+    # run it
+    node.run()
