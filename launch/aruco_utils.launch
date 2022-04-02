@@ -1,6 +1,6 @@
 <launch>
   <node name="aruco_utils" pkg="prrexamples" type="aruco_utils.py" respawn="false" output="screen" >
     <param name="suppressCmd" type="bool" value="true"/>  
-    <param name="target_fiducial" type="int" value="0"/>  
+    <param name="target_fiducial" value="fiducial_0"/>  
   </node>
 </launch>

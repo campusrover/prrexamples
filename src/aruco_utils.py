@@ -138,6 +138,7 @@ class FiducialUtils:
             self.br.sendTransform(t)
 
             if t.child_frame_id == self.target_fiducial:
+                rospy.loginfo("Matched Fiducial: %s", self.target_fiducial)
                 # We found the fiducial we are looking for
                 found = True
 
