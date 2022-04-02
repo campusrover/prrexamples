@@ -259,12 +259,6 @@ class FiducialUtils:
 #             rate.sleep()
 
 
-if __name__ == "__main__":
-    # Create an instance of our follow class
-    node = Follow()
-    # run it
-    node.run()
-
 # Main function.
 if __name__ == "__main__":
     # Initialize the node and name it.
