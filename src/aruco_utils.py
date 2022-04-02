@@ -125,8 +125,8 @@ class FiducialUtils:
                 "Fid %d %lf %lf %lf %lf %lf %lf %lf\n"
                 % (id, trans.x, trans.y, trans.z, rot.x, rot.y, rot.z, rot.w)
             )
-            # t = TransformStamped()
-            # t.child_frame_id = "fid%d" % id
+            t = TransformStamped()
+            t.child_frame_id = "fid%d" % id
             # t.header.frame_id = msg.header.frame_id
             # t.header.stamp = imageTime
             # t.transform.translation.x = trans.x
