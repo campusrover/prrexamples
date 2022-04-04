@@ -9,14 +9,14 @@
 #     t.stuck() # etc
 #     t.get_graph().draw('fsm_example.png', prog='dot')
 
-from transitions.extensions import GraphMachine as Machine
+from transitions.extensions import GraphMachine
 
 class MoveBaseRecovery(object):
   states = ['navigating', 'reset', 'rotate1', 'reset_aggressive', 'rotate2', 'abort']
 
   def __init__(self, name):
     self.name = name
-    self.machine = Machine(model=self, states=MoveBaseRecovery.states, initial='navigating')
+    self.machine = GraphMachine(model=self, states=MoveBaseRecovery.states, initial='navigating')
 
     self.machine.add_transition(trigger='stuck', source='navigating', dest='reset')
     self.machine.add_transition(trigger='clear', source='reset', dest='navigating')
