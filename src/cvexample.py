@@ -1,4 +1,15 @@
 #!/usr/bin/env python
+
+# This is a code example for Cosi119a - Autonomous Robotics
+# It illustrates
+# 1. how to subscribe and publish images - from the camera and to another topic
+# 2. how to use opencv to do a variety of useful transformations
+# 3. how to use dynamic_reconfigure to change parameters and see the effect
+
+""" 
+NOTES: Make sure the camera is on. Verify that you see the images either with rviz or rqt_image_view (https://wiki.ros.org/rqt_image_view). This program will take that image and subject it to several transformations and publish the transformed images on other topics. Also run rqt_reconfigure (https://wiki.ros.org/rqt_reconfigure) which will give you a simple UI where you can play with parameters to see what works best. You will have to read the code to see what it does in more detail. I will add features to it as they come up.
+ """
+
 import rospy
 import tf
 from geometry_msgs.msg import Twist
@@ -10,12 +21,6 @@ import numpy as np
 import cv2 as cv
 from dynamic_reconfigure.server import Server as DynamicReconfigureServer
 from prrexamples.cfg import CvexampleConfig as ConfigType
-
-# This is a code example for Cosi119a - Autonomous Robotics
-# It illustrates
-# 1. how to subscribe and publish images - from the camera and to another topic
-# 2. how to use opencv to do a variety of useful transformations
-# 3. how to use dynamic_reconfigure to change parameters and see the effect
 
 class CvExample():
 
