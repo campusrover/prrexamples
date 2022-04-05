@@ -27,7 +27,7 @@ class CvExample():
     def cv_callback(self, msg):
         if (self.param_ready):
             rospy.loginfo("Image callback")
-            self.rgb_image = CvBridge().compressed_imgmsg_to_cv2(msg)
+            self.rgb_image = CvBridge().imgmsg_to_cv2(msg)
             self.hsv_image = cv.cvtColor(self.rgb_image, cv.COLOR_BGR2HSV)
             self.create_masked_image()
             self.create_grey_image()
@@ -89,7 +89,7 @@ class CvExample():
 
     def __init__(self):
         self.param_ready = False
-        self.cam_sub = rospy.Subscriber("/raspicam_node/image/compressed", CompressedImage, self.cv_callback)
+        self.cam_sub = rospy.Subscriber("/camera/rgb/image_raw", Image, self.cv_callback)
         self.masked_pub = rospy.Publisher("/cvexample/masked/compressed", CompressedImage, queue_size=1)
         self.grayed_pub = rospy.Publisher("/cvexample/grayed/compressed", CompressedImage, queue_size=1)
         self.blurred_pub = rospy.Publisher("/cvexample/blurred/compressed", CompressedImage, queue_size=1)
