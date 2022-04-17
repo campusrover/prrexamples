@@ -8,6 +8,7 @@ project(prrexamples)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  rospy
   dynamic_reconfigure
   message_generation
   actionlib_msgs
@@ -50,6 +51,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   Complex.msg
+  Robogym.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -203,4 +205,4 @@ include_directories(
 # make sure configure headers are built before any node using them
 add_executable(cvexample src/cvexample.py)
 add_dependencies(cvexample prrexamples_gencfg)
-set_target_properties(cvexample PROPERTIES LINKER_LANGUAGE CMAKE_py_LINK_EXECUTABLE)
+set_target_properties(cvexample PROPERTIES LINKER_LANGUAGE CMAKE_py_LINK_EXECUTABLE )
