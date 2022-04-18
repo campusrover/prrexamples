@@ -15,16 +15,21 @@ class RobogymCmds:
         command = text_line.split()
         message = Robogym()
         if text_line == "" or command[0] == "help":
-            print("Commands are: reset, stop, exit, once, rate, lin, ang, status, pub, count, time, standard, idle, limit")
-        elif command[0] not in {'reset', 'once', 'status', 'rate', 'lin', 'ang', 'pub', 'count', 'time','idle', 'limit', 'standard'}:
+            print("Commands are: move, time, count, distance, reset")
+        elif command[0] not in {'move', 'time', 'count', 'distance', 'reset'}:
             print("I don't know that command")
-            print("Commands are: reset, exit, once, rate, lin, ang, status, pub, count, time, idle, standard, limit")
+            print("Commands are: move, time, count, distance, reset")
         else:
             message.command = command[0]
             if (len(command) >= 2):
-                message.arg1 = float(command[1])
-            if (len(command) == 3):
-                message.arg2 = float(command[2])
+                message.lin = float(command[1])
+            if (len(command) >= 3):
+                message.ang = float(command[2])
+            if (len(command) >= 4):
+                message.rate = float(command[3])
+            if (len(command) >= 5):
+                message.lim = float(command[4])
+
             self.cli_pub.publish(message)
 
     def run(self):

@@ -15,7 +15,7 @@ class RoboGym:
 
     def reset(self):
         self.speed_trans = 0
-        self.mode = "standard"
+        self.mode = "reset"
         self.countdown = 0
         self.speed_ang = 0
         self.speed_linear = 0
@@ -24,65 +24,57 @@ class RoboGym:
         self.sub_cli = rospy.Subscriber('cli', Robogym, self.cli_callback)
         self.last_twist = Twist()
 
+# Commands:
+# move lin, rot, rate
+# count lin, rot, rate, count
+# reset
+# distance lin, rot, rate, meters (NYI)
+# time lin, rot, rate, seconds (NYI)
 
-# Modes are:
-# standard - publishes cmd_vel 'rate' times per second
-# idle - doesn't publish cmd_vel
-# limited - goes for a certain count, time or distance
-#
-# params are:
-# rate = hz for cmd_vel pubs
-# lin = linear speed
-# ang = angular speed
-# couunt = counter 
+    def check_params(self, msg):
+        if msg.command != "reset" and msg.rate <= 0:
+            return False
+        if msg.command == "count" and msg.lim <= 0:
+            return False
+        return True
 
     def cli_callback(self, msg):
-        if (msg.command == "rate"):
-            self.pub_rate = msg.arg1
-            if self.pub_rate == 0:
-                self.mode = "idle"
-        elif (msg.command == "lin"):
-            self.speed_linear = msg.arg1
-        elif msg.command == "rot":
-            self.speed_ang = msg.arg1
+        if not self.check_params(msg):
+            print ("!! Bad command")
+            return
+        self.last_twist = Twist()
+        self.last_twist.linear.x = msg.lin
+        self.last_twist.angular.z = msg.ang
+        self.pub_rate = msg.rate
+        if (msg.command == "reset"):
+            self.mode = "reset"
+        if (msg.command == "move"):
+            self.mode = "move"
         elif msg.command == "count":
-            self.countdown = msg.arg1
-        elif msg.command == "reset":
-            self.reset()
-        elif msg.command == "standard":
-            self.mode = "standard"
-            self.pub_rate = 0.5
-        elif msg.command == "idle":
-            self.mode = "idle"
-        elif msg.command == "limit":
-            self.mode = "limit"
-
+            self.mode = "count"
+            self.countdown = msg.lim
 
     def step(self):
-        print("publish cmd_vel")
-        self.last_twist = Twist()
-        self.last_twist.linear.x = self.speed_linear
-        self.last_twist.angular.z = self.speed_ang
-        self.pub_cmd_vel.publish(self.last_twist)
         if self.pub_rate == 0:
             print("step with pub rate 0 is a bug")
         else:
+            self.pub_cmd_vel.publish(self.last_twist)
             rospy.sleep(1.0/self.pub_rate)
 
     def run(self):
         while not rospy.is_shutdown():
-            if self.mode == "limit":
+            if self.mode == "count":
                 print("counting down")
                 self.countdown -= 1
                 if self.countdown == 0:
-                    self.mode = "idle"
-                    self.pub_rate = 0.0
+                    self.mode = "reset"
                 else:
                     self.step()
-            elif self.mode == "idle":
-                print("idle")
+            elif self.mode == "reset":
+                t = Twist()
+                self.pub_cmd_vel.publish(t)
                 rospy.sleep(1)
-            elif self.mode == "standard":
+            elif self.mode == "move":
                 self.step()
 
 # Main function.
