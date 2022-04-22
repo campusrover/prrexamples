@@ -5,8 +5,6 @@ from geometry_msgs.msg import Twist
 from std_msgs.msg import String
 from prrexamples.msg import Robogym 
 
-
-
 class RoboGym:
     def __init__(self):
         self.pub_cmd_vel = rospy.Publisher('cmd_vel', Twist, queue_size = 1)
@@ -53,6 +51,11 @@ class RoboGym:
         elif msg.command == "count":
             self.mode = "count"
             self.countdown = msg.lim
+        elif msg.command == "time":
+            self.mode = "time"
+            now = rospy.get_rostime()
+            self.start_time = now.secs
+            self.end_time = msg.lim + now.secs
 
     def step(self):
         if self.pub_rate == 0:
@@ -64,11 +67,18 @@ class RoboGym:
     def run(self):
         while not rospy.is_shutdown():
             if self.mode == "count":
-                print("counting down")
                 self.countdown -= 1
                 if self.countdown == 0:
                     self.mode = "reset"
                 else:
+                    print(f"counter {self.countdown}")
+                    self.step()
+            elif self.mode == "time":
+                togo = self.end_time - rospy.get_rostime().secs
+                if togo <= 0:
+                    self.mode = "reset"
+                else:
+                    print(f"timer {togo}")
                     self.step()
             elif self.mode == "reset":
                 t = Twist()

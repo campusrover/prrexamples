@@ -1,4 +1,4 @@
 <launch>
-  <node name="cli_publisher" pkg="prrexamples" type="robogym_cmds.py" respawn="false" output="screen" />
+  <node name="cli_publisher" pkg="prrexamples" type="rg.py" respawn="false" output="screen" />
   <node name="robogym" pkg="prrexamples" type="robogym.py" respawn="false" output="screen" />
 </launch>
