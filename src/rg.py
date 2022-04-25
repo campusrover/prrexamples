@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # termios library allows access to terminal (shell) input
 import sys, select, tty, termios
