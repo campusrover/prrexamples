@@ -8,6 +8,8 @@ LED_GPIO = 4
 
 def set_led_state_callback(req):
     GPIO.output(LED_GPIO, req.data)
+    rospy.loginfo("LED Command Received: %s", req.data)
+
     return { 'success': True,
             'message': 'Successfully changed LED state' }
 
