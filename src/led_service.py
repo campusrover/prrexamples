@@ -4,7 +4,7 @@ import rospy
 from std_srvs.srv import SetBool
 import RPi.GPIO as GPIO
 
-LED_GPIO = 20
+LED_GPIO = 4
 
 def set_led_state_callback(req):
     GPIO.output(LED_GPIO, req.data)
