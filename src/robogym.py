@@ -21,6 +21,7 @@ class RoboGym:
         self.pub_cmd_vel = rospy.Publisher('cmd_vel', Twist, queue_size = 1)
         self.sub_cli = rospy.Subscriber('cli', Robogym, self.cli_callback)
         self.last_twist = Twist()
+        self.once_flag = False
 
 # Commands:
 # move lin, rot, rate
@@ -63,6 +64,7 @@ class RoboGym:
         else:
             self.pub_cmd_vel.publish(self.last_twist)
             rospy.sleep(1.0/self.pub_rate)
+            self.once_flag = False
 
     def run(self):
         while not rospy.is_shutdown():
@@ -70,6 +72,7 @@ class RoboGym:
                 self.countdown -= 1
                 if self.countdown == 0:
                     self.mode = "reset"
+                    self.once_flag = True
                 else:
                     print(f"counter {self.countdown}")
                     self.step()
@@ -77,13 +80,16 @@ class RoboGym:
                 togo = self.end_time - rospy.get_rostime().secs
                 if togo <= 0:
                     self.mode = "reset"
+                    self.once_flag = True
                 else:
                     print(f"timer {togo}")
                     self.step()
             elif self.mode == "reset":
-                t = Twist()
-                self.pub_cmd_vel.publish(t)
-                rospy.sleep(1)
+                if self.once_flag:
+                    t = Twist()
+                    self.pub_cmd_vel.publish(t)
+                    rospy.sleep(1)
+                    self.once_flag = False
             elif self.mode == "move":
                 self.step()
 
