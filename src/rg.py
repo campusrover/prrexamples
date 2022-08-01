@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
 
 # termios library allows access to terminal (shell) input
-import sys, select, tty, termios
+import sys
+import select
+import tty
+import termios
 import rospy
 from std_msgs.msg import String
-from prrexamples.msg import Robogym 
+from prrexamples.msg import Robogym
 
+# robogym.py and rg.py work together. rg.py accepts commands from the keyboard and generates Robogym messages which are very
+# very simple parsing of the commands. robogym.py subscribes to these messages and executes them. Neither needs to run `onboard`.
+# loog at robogym.py for more documentation on the commands
 
 class RobogymCmds:
     def __init__(self):
@@ -36,7 +42,7 @@ class RobogymCmds:
             print(f"pubbing {message}")
             self.cli_pub.publish(message)
             return False
-    
+
     def command_loop(self):
         exitnow = False
         if len(sys.argv) == 1:
@@ -44,7 +50,7 @@ class RobogymCmds:
                 command = input(">>> ")
                 command = command.split()
                 exitnow = self.do_cmd(command)
-    
+
     def command_once(self):
         try:
             rate = rospy.Rate(10)  # 10hz
@@ -57,7 +63,8 @@ class RobogymCmds:
                 rate.sleep()
         except rospy.ROSInterruptException as e:
             raise e
-        
+
+
 if __name__ == "__main__":
     rospy.init_node("rg")
     r = RobogymCmds()
