@@ -3,7 +3,7 @@
 import rospy
 from geometry_msgs.msg import Twist
 from std_msgs.msg import String
-from prrexamples.msg import Robogym 
+from prrexamples.msg import Robogym
 
 class RoboGym:
     def __init__(self):
