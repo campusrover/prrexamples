@@ -5,9 +5,28 @@ from geometry_msgs.msg import Twist
 from std_msgs.msg import String
 from prrexamples.msg import Robogym
 
+# robogym.py and rg.py work together. rg.py accepts commands from the keyboard and generates Robogym messages which are very
+# very simple parsing of the commands. robogym.py subscribes to these messages and executes them. Neither needs to run `onboard`.
+#
+# The purpose is to help callibrate a robot by sending commands that can be performed by the robot and then measured because
+# they are accurate.
+#
+# The commands are:
+#
+# reset = stops the robot motion
+# move <linear-speed> <angular-speed> <rate> 
+#   which will send a constant stream of cmd_vels of the stated linear and angular at the stated rate
+# time <linear-speed> <angular-speed> <rate> <seconds>
+#   which will send a stream of cmd_vels of the stated linear and angular at the stated rate for specified seconds
+# count <linear-speed> <angular-speed> <rate> <count>
+#   which will send a stream of exactly <count> cmd_vels of the stated linear and angular at the stated rate
+# distance <linear-speed> <angular-speed> <rate> <distance>
+#   which will send a stream of <count> cmd_vels of the stated linear and angular at the stated rate until the <distance> has been covered.
+#
+
 class RoboGym:
     def __init__(self):
-        self.pub_cmd_vel = rospy.Publisher('cmd_vel', Twist, queue_size = 1)
+        self.pub_cmd_vel = rospy.Publisher('cmd_vel', Twist, queue_size=1)
         self.sub_cli = rospy.Subscriber('cli', Robogym, self.cli_callback)
         self.reset()
 
@@ -18,13 +37,13 @@ class RoboGym:
         self.speed_ang = 0
         self.speed_linear = 0
         self.pub_rate = 0.5
-        self.pub_cmd_vel = rospy.Publisher('cmd_vel', Twist, queue_size = 1)
+        self.pub_cmd_vel = rospy.Publisher('cmd_vel', Twist, queue_size=1)
         self.sub_cli = rospy.Subscriber('cli', Robogym, self.cli_callback)
         self.last_twist = Twist()
         self.once_flag = False
 
 # Commands:
-# move lin, rot, rate
+# move lin, rot, rate e.g. move 0.5 0 5
 # count lin, rot, rate, count
 # reset
 # distance lin, rot, rate, meters (NYI)
@@ -39,7 +58,7 @@ class RoboGym:
 
     def cli_callback(self, msg):
         if not self.check_params(msg):
-            print ("!! Bad command")
+            print("!! Bad command")
             return
         self.last_twist = Twist()
         self.last_twist.linear.x = msg.lin
@@ -93,6 +112,7 @@ class RoboGym:
             elif self.mode == "move":
                 self.step()
 
+
 # Main function.
 if __name__ == "__main__":
     # Initialize the node and name it.
@@ -101,4 +121,3 @@ if __name__ == "__main__":
         RoboGym().run()
     except rospy.ROSInterruptException:
         pass
-    
