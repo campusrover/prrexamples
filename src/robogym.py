@@ -24,7 +24,6 @@ from prrexamples.msg import Robogym
 #   which will send a stream of <count> cmd_vels of the stated linear and angular at the stated rate until the <distance> has been covered.
 #
 
-
 class RoboGym:
     def __init__(self):
         self.pub_cmd_vel = rospy.Publisher('cmd_vel', Twist, queue_size=1)
