@@ -5,7 +5,7 @@ import rospy
 from std_msgs.msg import Int32
 
 # Make this into a ROS node.
-rospy.init_node(anonymous=True)
+rospy.init_node('test')
 
 # Prepare to publish topic `counter`
 pub = rospy.Publisher('counter', Int32, queue_size=10)
@@ -20,4 +20,3 @@ while not rospy.is_shutdown():
     count += 1
     rate.sleep()
     rospy.sleep(0.5)
-    sleep(0.5)
