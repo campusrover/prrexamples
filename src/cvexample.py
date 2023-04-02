@@ -26,7 +26,6 @@ class CvExample():
 
     def cv_callback(self, msg):
         if (self.param_ready):
-            rospy.loginfo("Image callback")
             self.rgb_image = CvBridge().imgmsg_to_cv2(msg)
             self.hsv_image = cv.cvtColor(self.rgb_image, cv.COLOR_BGR2HSV)
             self.create_masked_image()
