@@ -3,17 +3,18 @@ import rospy
 
 import tf2_ros
 from geometry_msgs.msg import Twist
-from vision_msgs.msg import Detection2DArray
+from fiducial_msgs.msg import FiducialTransformArray
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
 
 class ArucoExample():
 
     def fiducial_cb(self, msg):
+        rospy.loginfo(f"Targets in sight: {len(msg.transforms)}")
+
         if len(msg.transforms) != 0:
             self.detected_target = msg.transforms[0].fiducial_id
         else:
             self.detected_target = None
-            rospy.loginfo(f"Target in sight: {self.detected_target}")
         # if (self.state == "none_in_sight"):
         #     locate_fiducial()
 
