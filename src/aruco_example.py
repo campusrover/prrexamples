@@ -3,9 +3,8 @@ import rospy
 
 import tf2_ros
 from geometry_msgs.msg import Twist
-from fiducial_msgs.msg import FiducialTransformArray
+from vision_msgs.msg import Detection2DArray
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
-
 
 class ArucoExample():
 
@@ -14,7 +13,7 @@ class ArucoExample():
             self.detected_target = msg.transforms[0].fiducial_id
         else:
             self.detected_target = None
-        print(f"Target in sight: {self.detected_target}")
+            rospy.loginfo(f"Target in sight: {self.detected_target}")
         # if (self.state == "none_in_sight"):
         #     locate_fiducial()
 
@@ -30,6 +29,7 @@ class ArucoExample():
         self.state = "none_in_sight"
 
     def run(self):
+        rospy.loginfo("Running")
         while not rospy.is_shutdown() and self.state != "done_looking":
             self.rate.sleep()
 
