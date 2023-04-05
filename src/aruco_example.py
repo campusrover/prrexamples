@@ -10,13 +10,10 @@ class ArucoExample():
 
     def fiducial_cb(self, msg):
         rospy.loginfo(f"Targets in sight: {len(msg.transforms)}")
-
         if len(msg.transforms) != 0:
             self.detected_target = msg.transforms[0].fiducial_id
         else:
             self.detected_target = None
-        # if (self.state == "none_in_sight"):
-        #     locate_fiducial()
 
     def locate_fiducial():
         # Rotate in place until a fiducial is in sight
