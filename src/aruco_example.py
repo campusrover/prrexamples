@@ -10,7 +10,14 @@ class ArucoExample():
 
     def fiducial_cb(self, msg):
         #rospy.loginfo(f"Targets in sight: {len(msg.transforms)}")
+
+
         if len(msg.transforms) != 0:
+            if self.detected_target == None:
+                self.detected_target = msg.transforms[0].fiducial_id
+            else:
+
+
             self.detected_target = msg.transforms[0].fiducial_id
             rot_q = msg.transforms[0].transform.rotation
             rot_e = euler_from_quaternion([rot_q.x, rot_q.y, rot_q.z, rot_q.w])
@@ -28,6 +35,13 @@ class ArucoExample():
         self.rate = rospy.Rate(10)
         self.state = "none_in_sight"
         self.visited = []
+
+    def locate_target(self, msg):
+        if len(msg.transforms) == 0:
+            return None
+
+            return 
+
 
     def run(self):
         rospy.loginfo("Running")
