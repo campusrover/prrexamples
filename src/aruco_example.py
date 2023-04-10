@@ -9,23 +9,12 @@ from tf.transformations import euler_from_quaternion, quaternion_from_euler
 class ArucoExample():
 
     def fiducial_cb(self, msg):
-        #rospy.loginfo(f"Targets in sight: {len(msg.transforms)}")
-
-
-        if len(msg.transforms) != 0:
-            if self.detected_target == None:
-                self.detected_target = msg.transforms[0].fiducial_id
-            else:
-
-
-            self.detected_target = msg.transforms[0].fiducial_id
-            rot_q = msg.transforms[0].transform.rotation
-            rot_e = euler_from_quaternion([rot_q.x, rot_q.y, rot_q.z, rot_q.w])
-            tra = msg.transforms[0].transform.translation
-#           print(f'{tra.x:3.2} {tra.y:3.2} {tra.z:3.2} {rot_e[0]:3.2} {rot_e[1]:3.2} {rot_e[2]:3.2}')
-
-        else:
-            self.detected_target = None
+        self.adopt_target(msg)
+        if self.located != None:
+            tra, rot_e = self.calc_transform()
+            print(f'{tra.x:3.2} {tra.y:3.2} {tra.z:3.2} {rot_e[0]:3.2} {rot_e[1]:3.2} {rot_e[2]:3.2}')
+        else;
+            print("None")
 
     def __init__(self):
         rospy.init_node('aruco_sample')
@@ -36,16 +25,35 @@ class ArucoExample():
         self.state = "none_in_sight"
         self.visited = []
 
-    def locate_target(self, msg):
+    def locate_target(self, msg, target):
         if len(msg.transforms) == 0:
             return None
+        for i in range(len(msg.transforms)):
+            if msg.transforms[i].fiducial_id == target:
+                return msg.transforms[i]      
+        return None
 
-            return 
+    def adopt_target(self, msg):
+        if self.detected_target == None:
+            if len(msg.transforms) != 0:
+                self.located = msg.transforms[0]
+        else:
+            self.located = self.locate_target(msg, self.detected_target)
+        if self.located != None:
+            self.detected_target = self.located.fiducial_id
 
+    def calc_transform(self):
+        if self.located == None:
+            return None
+        rot_q = self.located.transform.rotation
+        rot_e = euler_from_quaternion([rot_q.x, rot_q.y, rot_q.z, rot_q.w])
+        tra = self.located.transform.translation
+        return tra, rot_e
 
     def run(self):
         rospy.loginfo("Running")
         while not rospy.is_shutdown() and self.state != "done_looking":
+            self.twist_pub.publish(self.twist)
             self.rate.sleep()
 
 aruco_example = ArucoExample()
